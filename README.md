@@ -43,6 +43,27 @@ As this project is based on the [Electron Quick Start](https://github.com/electr
 
 You can learn more about each of these components in depth within the [Tutorial](https://electronjs.org/docs/latest/tutorial/tutorial-prerequisites).
 
+
+## Encryption
+
+This application uses a combination of encryption algorithms to keep user data secure.
+
+1. **AES-256-CBC**: The Advanced Encryption Standard (AES) algorithm with a key size of 256 bits is used for encrypting and decrypting data. This is a symmetric encryption algorithm, meaning the same key is used for encrypting and decrypting the data. The app uses the Cipher Block Chaining (CBC) mode which provides good protection against many types of attack.
+
+2. **Bcrypt**: Bcrypt is used to secure the user's master password. This involves using a "salt" that is randomly generated and then combined with the user's password to create a hash. The salt is stored alongside the password hash, and is used when verifying the user's password. Bcrypt is resistant to brute-force and rainbow table attacks.
+
+3. **Mount Key**: The application uses a mount key, which is a cryptographic key used to encrypt and decrypt the user's data. This key is randomly created and is kept in memory while the user is authenticated.
+
+4. **CryptoJS**: CryptoJS is a JavaScript library that offers cryptographic algorithms for use in JavaScript applications. In this case, CryptoJS is used to encrypt the mount key with the user's password. This allows the mount key to be securely stored.
+
+5. **Testing**: The code includes tests to verify that the encryption and decryption works as expected. These tests check whether the mount key can be correctly encrypted and decrypted, and whether data can be correctly encrypted and decrypted.
+
+6. **Data Storage**: All user data is stored in an SQLite3 database. However, before data is saved, it is first encrypted using the above-mentioned methods. This means that even if someone were to gain access to the SQLite3 database file, they would not be able to understand the data without the decryption key (mount key). This key is created and managed within the application and does not leave it, providing an additional layer of security. The decryption key is securely created and stored in memory while the user is authenticated, making it difficult for an attacker to retrieve it.
+
+
+
+
+
 ## Resources for Learning Electron
 
 - [electronjs.org/docs](https://electronjs.org/docs) - all of Electron's documentation
