@@ -31,7 +31,7 @@ npm start
 ```
 ## Windows Installer
 
-If you just want to install the application, you can download the Windows installer [here](https://github.com/viniciusbuscacio/passwordplease/tree/main/build/dist).
+If you just want to install the application, you can download the Windows installer [here](https://github.com/viniciusbuscacio/passwordplease/releases/).
 
 ## Electron JS
 
