@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<!--THIS SCRIPT WILL INCLUDE THE HTML HEADER USING THE FILE getHTMLHeader.js--> 
+<script>
+  const { getHTMLHeader } = require('../js/getHTMLHeader.js');
+  const commonHTML = getHTMLHeader();
+  document.write(commonHTML);
+</script>
+<!-- START OF THE CONTENT OF THIS FILE--> 
+
+<div class="container">
+
+    <form id="categoryManagementForm">
+
+        <!-- Seção de Gerenciamento de Categorias -->
+        <div class="container mt-4">
+            <h1 class="mt-1">Category Management</h1>
+            <br>
+            <div class="d-flex mb-4 align-items-center">
+                <input type="text" id="newCategoryName" class="form-control" placeholder="New Category Name" style="width: 150px;">&nbsp;
+                <button id="addCategoryButton" class="btn btn-outline-primary" type="button">Add Category</button>
+            </div>
+            <table class="table table-striped" id="categoriesTable">
+                <thead>
+                    <tr>
+                        <th style="display: none;"></th>
+                        <th>Category Name</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="categoriesTableBody" class="center-content">
+                    
+                </tbody>
+            </table>
+          </div>
+          <br><br>
+          <div class="d-flex">
+            <button id="saveCategoriesButton" class="btn btn-outline-primary" type="submit">Save</button>
+            &nbsp;
+            <button id="cancelCategoriesButton" class="btn btn-outline-danger" type="button">Cancel</button>
+        </div>
+
+    </form>
+
+</div>
+
+<!-- Fim da Seção de Gerenciamento de Categorias -->
+
+<script src="../../libs/js/bootstrap.min.js"></script>
+<script src="../js/renderer.js"></script>
+<script src="../js/editCategories.js"></script>
+<br><br>
+<!-- END OF THE CONTENT OF THIS FILE--> 
+<!--START OF FOOTER --> 
+</body>
+</html>
+<!--END OF FOOTER --> 

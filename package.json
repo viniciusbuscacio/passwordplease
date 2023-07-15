@@ -1,0 +1,48 @@
+{
+  "name": "passwordplease",
+  "version": "0.1.0",
+  "description": "An Electron Password Manager",
+  "main": "src/js/main.js",
+  "scripts": {
+    "start": "electron .",
+    "build": "powershell -Command .\\build_script.ps1",
+    "postinstall": "node post-build.js"
+  },
+  "build": {
+    "appId": "com.passwordplease",
+    "files": [],
+    "directories": {
+      "output": "build/dist"
+    }
+  },
+  "clearOutputDirectory": true,
+  "win": {
+    "icon": "build/icon.ico"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/viniciusbuscacio/passwordplease.git"
+  },
+  "keywords": [
+    "password",
+    "manager"
+  ],
+  "author": "Vinicius Buscacio",
+  "license": "CC0-1.0",
+  "devDependencies": {
+    "electron": "^25.1.1"
+  },
+  "dependencies": {
+    "bcrypt": "^5.1.0",
+    "bootstrap-icons": "^1.10.5",
+    "crypto-js": "^4.1.1",
+    "cryptojs": "^2.5.3",
+    "sqlite3": "^5.1.6",
+    "uuid": "^9.0.0",
+    "xss-filters": "^1.2.7"
+  },
+  "bugs": {
+    "url": "https://github.com/viniciusbuscacio/passwordplease/issues"
+  },
+  "homepage": "https://github.com/viniciusbuscacio/passwordplease#readme"
+}

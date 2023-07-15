@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<!--THIS SCRIPT WILL INCLUDE THE HTML HEADER USING THE FILE getHTMLHeader.js--> 
+<script>
+  const { getHTMLHeader } = require('../js/getHTMLHeader.js');
+  const commonHTML = getHTMLHeader();
+  document.write(commonHTML);
+</script>
+<!-- START OF THE CONTENT OF THIS FILE--> 
+<body class="text-center">
+  
+    <div class="container">
+      <br><br>
+      <img class="mb-4" src="../../images/icon.png" alt="" width="72" height="72"><br>
+      <h1 class="text-center mt-1">passwordPlease</h1>
+      <br>
+
+        <div class="d-flex justify-content-center">
+          <button id="openLastDatabaseFileButton" class="btn btn-outline-primary" type="button" style="display: none;">Open last opened Database</button>
+        </div>
+
+    </div>
+
+
+    <script src="../../libs/js/bootstrap.min.js"></script>
+    <script src="../js/index.js"></script>
+
+
+<!-- END OF THE CONTENT OF THIS FILE--> 
+    <!--START OF FOOTER --> 
+  </body>
+</html>
+<!--END OF FOOTER --> 

@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--THIS SCRIPT WILL INCLUDE THE HTML HEADER USING THE FILE getHTMLHeader.js--> 
+<script>
+  const { getHTMLHeader } = require('../js/getHTMLHeader.js');
+  const commonHTML = getHTMLHeader();
+  document.write(commonHTML);
+</script>
+<!-- START OF THE CONTENT OF THIS FILE--> 
+
+
+
+<div class="container">
+  <h1 class="text-center mt-1">Settings</h2>
+    <br><br>
+    <form id="settingsForm" class="form-inline">
+
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="flexSwitchCheckChecked" checked>
+          <label class="form-check-label" for="flexSwitchCheckChecked">Enable database autolock</label>
+        </div>
+
+        <br>
+        <div class="d-flex mt-3 align-items-center justify-content-start">
+          <label for="autoLockTime">Autolock database time:</label>
+          &nbsp;&nbsp;
+          <input type="number" id="autoLockTime" min="1" max="60" step="1" value="5" class="form-control" style="width: 100px;">
+          &nbsp;&nbsp;
+          <select id="autoLockTimeUnit" class="form-select" style="width: 100px;" title="autoLockTimeUnit">
+              <option value="seconds">Seconds</option>
+              <option value="minutes" selected>Minutes</option>
+              <option value="hours">Hours</option>
+          </select>
+        </div>
+
+        <br><br>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="lockOnMinimizeSwitch" checked>
+          <label class="form-check-label" for="lockOnMinimizeSwitch">Lock database on minimize</label>
+        </div>
+
+
+        <br><br>
+        <div class="form-check form-switch">
+          <input class="form-check-input" type="checkbox" id="closeToTray" checked>
+          <label class="form-check-label" for="closeToTray">Minimize the app to tray when clicking on "Close" (X)</label>
+        </div>
+        
+
+        <br><br>
+
+        <div class="d-flex mt-3 align-items-center justify-content-start">
+          <label for="generatePasswordSize">Default length for generating new passwords:</label>
+          &nbsp;&nbsp;
+          <input type="number" id="generatePasswordSize" min="1" max="100" step="1" value="12" class="form-control" style="width: 100px;">
+          &nbsp;&nbsp;
+        </div>
+
+
+
+        <br><br>
+
+
+        <div class="d-flex">
+            <button id="saveSettingsButton" class="btn btn-outline-primary" type="button">Save</button>
+            &nbsp;
+            <button id="cancelSettingsButton" class="btn btn-outline-danger" type="button">Cancel</button>
+        </div>
+    </form>
+
+</div>
+    <script src="../../libs/js/bootstrap.min.js"></script>
+    <script src="../js/renderer.js"></script>
+
+
+
+<!-- END OF THE CONTENT OF THIS FILE--> 
+    <!--START OF FOOTER --> 
+  </body>
+</html>
+<!--END OF FOOTER --> 

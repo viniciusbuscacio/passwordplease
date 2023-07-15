@@ -1,0 +1,61 @@
+/* styles.css */
+/* Add styles here to customize the appearance of your app */
+.hidden {
+    display: none;
+}
+
+html {
+  font-size: 90%;
+}
+
+.selected {
+  background-color: rgb(206, 208, 211); /* Altere o estilo conforme necessário */
+  color: black;
+}
+
+body {
+    background-color: #F5F5F5; /* substitua pela cor desejada */
+  }
+
+
+.context-menu {
+  position: absolute;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  padding: 5px;
+  display: none;
+}
+
+.context-menu ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+table {
+  width: 100%;
+  border: 1px solid #867f7f;
+}
+
+
+.context-menu li {
+  padding: 5px 10px;
+  cursor: pointer;
+}
+
+
+.context-menu li:hover {
+  background-color: #f0f0f0;
+}
+
+.container {
+  width: 100% !important;  /* Define a largura como 95% da viewport */
+  max-width: none !important;  /* Remove a largura máxima fixa */
+}
+
+.limited-cell {
+  max-width: 100px;  /* Ajuste este valor para a largura desejada */
+  overflow: hidden;  /* Esconde o conteúdo que excede a largura máxima */
+  text-overflow: ellipsis;  /* Adiciona "..." quando o conteúdo é muito longo */
+  white-space: nowrap;  /* Evita que o texto quebre em várias linhas */
+}

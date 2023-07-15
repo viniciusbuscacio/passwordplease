@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<!--THIS SCRIPT WILL INCLUDE THE HTML HEADER USING THE FILE getHTMLHeader.js--> 
+<script>
+  const { getHTMLHeader } = require('../js/getHTMLHeader.js');
+  const commonHTML = getHTMLHeader();
+  document.write(commonHTML);
+</script>
+<!-- START OF THE CONTENT OF THIS FILE--> 
+
+
+    <div class="container">
+      <h1 class="text-center mt-1">Edit password</h1>
+      
+      <form id="editForm">
+        <input type="hidden" id="id" name="id">
+        <label for="title">Title:</label><br>
+        <input type="text" id="title" name="title" class="form-control"><br>
+        <label for="username">Username:</label><br>
+        <input type="text" id="username" name="username" class="form-control"><br>
+        <label for="password">Password:</label><br>
+
+        <div class="d-flex">
+          <input type="password" id="password" name="password" class="form-control">
+          &nbsp;
+          <button id="showPasswordButton" type="button" class="btn btn-outline-primary ml-2" onclick="togglePasswordVisibility()" title="Toggle Password Visibility"><i class="bi bi-eye"></i></button>
+          &nbsp;
+          <button id="generatePasswordButton" class="btn btn-outline-primary" type="button" onclick="generateRandomPassword()">Generate</button>
+        </div>
+        <br>
+
+        <div class="d-flex">
+          <label for="URL">URL:</label>&nbsp;&nbsp;
+          <p id="urlError" style="color: red; margin: 0;"></p>
+        </div>
+
+        <div class="d-flex">
+          <input type="text" id="URL" name="URL" class="form-control"> &nbsp;
+          <button id="openURL" class="btn btn-outline-primary" type="button">Open</button>
+        </div>
+        
+        <br>
+        
+        <div class="d-flex align-items-center">
+          <label for="Category">Category:</label>&nbsp;&nbsp;
+          <select id="categoryDropdown" class="form-select" style="width: 200px;"></select>
+        </div>
+        <br>
+
+
+        <textarea rows="5" cols="60" id="notes" name="notes" class="form-control" placeholder="Enter notes"></textarea>
+
+        <br>
+        
+        <div class="d-flex">
+          <input type="submit" value="Save" class="btn btn-outline-primary">
+          &nbsp;
+          <button type="button" class="btn btn-outline-danger" id="backButton">Cancel</button>
+        </div>
+        </form>
+    </div>
+    <script src="../js/renderer.js"></script>
+    <script src="../../libs/js/bootstrap.min.js"></script>
+    <br><br>
+  </body>
+</html>

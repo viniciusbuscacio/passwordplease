@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<!--THIS SCRIPT WILL INCLUDE THE HTML HEADER USING THE FILE getHTMLHeader.js--> 
+<script>
+  const { getHTMLHeader } = require('../js/getHTMLHeader.js');
+  const commonHTML = getHTMLHeader();
+  document.write(commonHTML);
+</script>
+<!-- START OF THE CONTENT OF THIS FILE--> 
+
+
+  <body>
+    <div class="container justify-content-center">
+      <br><br>
+      <img class="mb-4 mx-auto d-block" src="../../images/icon.png" alt="" width="72" height="72">
+      <h1 class="text-center mt-2">About passwordPlease</h1><br>
+      </div>
+      <div style="margin-left: 20px;">
+        <p>This is a very basic program to store passwords, using the following technologies:</p>
+        <ul class="normal-font list-unstyled list-circle">
+          <li>Electron</li>
+          <li>JavaScript / HTML / CSS</li>
+          <li>Bootstrap</li>
+        </ul>
+        <p>It was developed by Vinicius Buscacio, and the source code is available at:</p>
+      <a href="https://github.com/viniciusbuscacio/passwordPlease" target="_blank">https://github.com/viniciusbuscacio/passwordPlease</a>
+      <br><br>
+      <p>Email: <a href="mailto:vinicius@buscacio.net">vinicius@buscacio.net</a></p>
+      <br>
+      <button class="btn btn-outline-primary" id="backButton">Back</button>
+      <br><br>
+    </h6>
+    </div>
+  </div>
+    <script src="../js/renderer.js"></script>
+    <script src="../../libs/js/bootstrap.min.js"></script>
+  </body>
+</html>

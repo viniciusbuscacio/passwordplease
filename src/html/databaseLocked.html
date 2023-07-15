@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<!--THIS SCRIPT WILL INCLUDE THE HTML HEADER USING THE FILE getHTMLHeader.js--> 
+<script>
+  const { getHTMLHeader } = require('../js/getHTMLHeader.js');
+  const commonHTML = getHTMLHeader();
+  document.write(commonHTML);
+</script>
+<!-- START OF THE CONTENT OF THIS FILE--> 
+<body class="text-center">
+  <div class="container" style="width: 80%;"><br><br>
+    <img class="mb-4" src="../../images/icon.png" alt="" width="72" height="72">
+      <h1 class="text-center mt-5">Database locked</h1>
+        <div class="d-flex justify-content-center">
+          <form id="unlockForm" class="text-center">
+          <label for="password">Enter your password to unlock the database:</label><br><br>
+          <div class="d-flex justify-content-center">
+              <input type="password" id="password" name="password" required class="form-control" style="width: 400px;">&nbsp;<button id="showPasswordButton" type="button" class="btn btn-outline-primary ml-2" onclick="togglePasswordVisibility()" title="Toggle Password Visibility"><i class="bi bi-eye"></i></button>
+          </div>
+          <br>
+          <p id="error-message" style="display: none; color: red;">Incorrect password. Please try again.</p>
+          <input type="submit" value="Unlock Database" class="btn btn-outline-primary">
+          </form>
+        </div>
+  </div>
+  
+    <script src="../js/renderer.js"></script>
+    <script src="../../libs/js/bootstrap.min.js"></script>
+
+
+<!-- END OF THE CONTENT OF THIS FILE--> 
+    <!--START OF FOOTER --> 
+  </body>
+</html>
+<!--END OF FOOTER --> 
