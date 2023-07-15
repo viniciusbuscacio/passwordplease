@@ -12,6 +12,15 @@ This project is in its initial stages and is free to use. However, please be awa
 
 It's also important to note that if you create a master password and forget it, the data encrypted by the program will not be recoverable. Please make sure to remember your master password!
 
+## Features
+
+- **Secure Password Storage**: passwordPlease uses advanced encryption techniques to ensure that your passwords are stored securely. All passwords are encrypted using AES-256-CBC encryption, bcrypt hashing, and are then stored in an SQLite3 database, providing an extra layer of security.
+
+- **User-Friendly Interface**: The interface of passwordPlease is designed to be simple and user-friendly, making password management an easy task. You can add, delete, and update your passwords with a few simple clicks.
+
+- **Accessible via Windows Taskbar**: To make accessing your passwords as convenient as possible, passwordPlease runs as a lightweight application in your Windows taskbar. This means your passwords are always just a couple of clicks away, without the need to open up a separate application or webpage.
+
+
 **Application Structure**
 
 - `package.json` - Points to the app's main file and lists its details and dependencies.
@@ -62,12 +71,28 @@ This application uses a combination of encryption algorithms to keep user data s
 
 
 
+## Changelog
+
+### 0.1.0
+
+- Initial release.
 
 
-## Resources for Learning Electron
 
-- [electronjs.org/docs](https://electronjs.org/docs) - all of Electron's documentation
-- [Electron Fiddle](https://electronjs.org/fiddle) - Electron Fiddle, an app to test small Electron experiments
+## Credits
+
+This application leans on several open-source libraries. We'd like to give our thanks to the following projects:
+
+- [Electron](https://electronjs.org/): The backbone of the app, Electron lets us build cross-platform desktop apps with JavaScript, HTML, and CSS.
+- [SQLite3](https://www.sqlite.org/index.html): SQLite3 provides the lightweight disk-based database that allows passwordPlease to store data persistently.
+- [CryptoJS](https://cryptojs.gitbook.io/docs/): A collection of cryptographic algorithms implemented in JavaScript which we use for secure encryption and hashing processes.
+- [bcrypt](https://www.npmjs.com/package/bcrypt): A library to help in hashing passwords. Bcrypt is a password-hashing function designed by Niels Provos and David Mazières.
+- [bootstrap](https://www.getbootstrap.com/): CSS Framework used for styling the application.
+- [bootstrap-icons](https://icons.getbootstrap.com/): For providing icon set.
+- [uuid](https://www.npmjs.com/package/uuid): For the creation of RFC4122 UUIDs.
+- [xss-filters](https://www.npmjs.com/package/xss-filters): An npm module providing XSS (cross-site scripting) string sanitation.
+
+The full list of dependencies can be found in the package.json file. We greatly appreciate all the work that has been put into these projects.
 
 
 ## License
