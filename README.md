@@ -4,6 +4,10 @@
 
 passwordPlease is a desktop application built with Electron.js that provides a secure and efficient way to store and manage your passwords.
 
+![App Screenshot](images/screenshots/07.png)
+
+More screenshots can be found [here](images/screenshots/).
+
 This project is in its initial stages and is free to use. However, please be aware that it comes with no warranty. While every effort has been made to create a secure application, the author takes no responsibility for any consequences arising from its use.
 
 It's also important to note that if you create a master password and forget it, the data encrypted by the program will not be recoverable. Please make sure to remember your master password!
