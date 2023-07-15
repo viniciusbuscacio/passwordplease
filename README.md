@@ -94,6 +94,10 @@ This application leans on several open-source libraries. We'd like to give our t
 
 The full list of dependencies can be found in the package.json file. We greatly appreciate all the work that has been put into these projects.
 
+## Support
+
+If you're having any problem with our app, please [create an issue](https://github.com/viniciusbuscacio/passwordPlease/issues/new) and we'll help you sort it out.
+
 
 ## License
 
