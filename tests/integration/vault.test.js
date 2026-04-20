@@ -1,0 +1,25 @@
+'use strict';
+const { describe, it, before, after } = require('node:test');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+const path = require('node:path');
+const os = require('node:os');
+const VaultController = require('../../src/controller/VaultController');
+const NodeCryptoProvider = require('../../src/infrastructure/NodeCryptoProvider');
+const SqliteStorageProvider = require('../../src/infrastructure/SqliteStorageProvider');
+describe('Integration: full vault lifecycle', () => {
+  const dbPath = path.join(os.tmpdir(), `pp-test-${Date.now()}.db`);
+  const mp = 'test-master-password-123!';
+  let ctrl;
+  before(() => { ctrl = new VaultController(new NodeCryptoProvider(), new SqliteStorageProvider()); });
+  after(async () => { try { await ctrl.lock(); } catch {} try { fs.unlinkSync(dbPath); } catch {} });
+  it('should create a new vault', async () => { await ctrl.create(dbPath, mp); assert.ok(ctrl.isUnlocked()); assert.ok(fs.existsSync(dbPath)); });
+  it('should set a secret', async () => { await ctrl.set({ title: 'Azure SP', username: '9595bd7c', password: 'secret-xyz', url: 'https://portal.azure.com', notes: 'ViniAgent SP' }); });
+  it('should set another secret', async () => { await ctrl.set({ title: 'Hostinger API', username: 'api', password: 'hst_abc123' }); });
+  it('should list secrets', async () => { const l = await ctrl.list(); assert.equal(l.length, 2); assert.ok(l.some(s => s.title === 'Azure SP')); });
+  it('should get a secret by title', async () => { const s = await ctrl.get('Azure SP'); assert.equal(s.password, 'secret-xyz'); assert.equal(s.url, 'https://portal.azure.com'); });
+  it('should get a specific field', async () => { assert.equal(await ctrl.get('Azure SP', 'password'), 'secret-xyz'); });
+  it('should delete a secret', async () => { const s = await ctrl.get('Hostinger API'); await ctrl.delete(s.id); assert.equal((await ctrl.list()).length, 1); });
+  it('should lock and re-unlock', async () => { await ctrl.lock(); assert.ok(!ctrl.isUnlocked()); await ctrl.unlock(dbPath, mp); assert.equal((await ctrl.get('Azure SP')).password, 'secret-xyz'); });
+  it('should reject wrong password', async () => { await ctrl.lock(); await assert.rejects(() => ctrl.unlock(dbPath, 'wrong'), { name: 'InvalidPasswordError' }); });
+});
