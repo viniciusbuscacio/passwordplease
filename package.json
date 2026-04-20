@@ -1,8 +1,8 @@
 {
   "name": "passwordplease",
-  "version": "0.1.0",
+  "version": "2.0.0",
   "description": "An Electron Password Manager",
-  "main": "src/js/main.js",
+  "main": "src/adapters/electron/main.js",
   "scripts": {
     "start": "electron .",
     "build": "powershell -Command .\\build_script.ps1",
@@ -35,11 +35,8 @@
   "dependencies": {
     "bcrypt": "^5.1.0",
     "bootstrap-icons": "^1.10.5",
-    "crypto-js": "^4.1.1",
-    "cryptojs": "^2.5.3",
     "sqlite3": "^5.1.6",
-    "uuid": "^9.0.0",
-    "xss-filters": "^1.2.7"
+    "uuid": "^9.0.0"
   },
   "bugs": {
     "url": "https://github.com/viniciusbuscacio/passwordplease/issues"
