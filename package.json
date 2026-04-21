@@ -1,5 +1,6 @@
 {
   "name": "passwordplease",
+  "productName": "passwordPlease",
   "version": "2.0.0",
   "description": "An Electron Password Manager",
   "main": "src/adapters/electron/main.js",
