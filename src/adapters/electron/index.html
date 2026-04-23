@@ -24,7 +24,12 @@
     /* Header */
     .pp-header { padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--bs-border-color); user-select: none; }
     .pp-header .brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.1rem; }
-    .pp-header .brand img { width: 28px; height: 28px; }
+    .pp-header .brand svg.brand-icon { width: 28px; height: 28px; border-radius: 6px; }
+    .icon-bg { fill: #1a2332; }
+    .icon-body { fill: #f0a830; }
+    .icon-shackle { fill: #6b7f8a; }
+    .icon-keyhole { fill: #4a5968; }
+    [data-bs-theme="light"] .icon-bg { fill: #1e3c78; }
 
     /* Modern buttons */
     .btn-primary, .btn-primary:active { background: var(--pp-accent) !important; border-color: var(--pp-accent) !important; color: #fff !important; border-radius: 0.5rem; font-weight: 500; }
@@ -63,14 +68,24 @@
 
     /* Scrollbar (webkit) */
     ::-webkit-scrollbar { width: 6px; }
-    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    [data-bs-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    [data-bs-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+    /* Header icon rounded */
   </style>
 </head>
 <body>
   <div class="pp-header">
     <div class="brand">
-      <img src="../../../images/icon.png" alt="logo">
+      <svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28">
+        <rect class="icon-bg" width="100" height="100" rx="18"/>
+        <path class="icon-shackle" d="M35 42V32c0-8.3 6.7-15 15-15s15 6.7 15 15v10h-7V32c0-4.4-3.6-8-8-8s-8 3.6-8 8v10z"/>
+        <rect class="icon-body" x="28" y="42" width="44" height="35" rx="6"/>
+        <circle class="icon-keyhole" cx="50" cy="56" r="5"/>
+        <path class="icon-keyhole" d="M47.5 56l-1 12h7l-1-12z"/>
+      </svg>
       <span>passwordPlease</span>
+      <span id="secret-count" class="text-body-secondary ms-2" style="font-size:0.8rem"></span>
       <span id="header-dbname" class="text-body-secondary small"></span>
     </div>
     <div class="d-flex align-items-center gap-2">
@@ -81,7 +96,7 @@
   </div>
 
   <div id="view-welcome" class="view active container">
-    <img src="../../../images/icon.png" alt="logo">
+    <img src="../../../images/icon.png" alt="logo" data-icon-base="icon">
     <h2 class="mb-4">passwordPlease</h2>
     <p class="text-body-secondary mb-4">Your secrets, your rules.</p>
     <div class="d-flex flex-column align-items-center gap-2" style="max-width: 300px; margin: 0 auto;">

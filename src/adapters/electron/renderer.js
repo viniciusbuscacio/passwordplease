@@ -32,6 +32,13 @@ function setTheme(theme) {
   localStorage.setItem('pp-theme', theme);
   const icon = document.querySelector('#btn-theme i');
   icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
+
+  // Swap app icons for light/dark mode
+  const iconSuffix = theme === 'light' ? '-light' : '';
+  document.querySelectorAll('img[data-icon-base]').forEach(img => {
+    const base = img.dataset.iconBase;
+    img.src = `../../../images/${base}${iconSuffix}.png`;
+  });
 }
 
 document.getElementById('btn-theme').addEventListener('click', () => {
@@ -237,9 +244,15 @@ async function loadSecretsList() {
   const result = await window.api.secrets.list();
   if (!result.ok) { toast('Error: ' + result.error); return; }
 
-  allSecrets = result.secrets || [];
+  allSecrets = (result.secrets || []).sort((a, b) => a.title.localeCompare(b.title));
   renderSecrets(allSecrets);
+  updateSecretCount(allSecrets.length);
   showView('view-list');
+
+  // Warn about duplicates
+  if (result.duplicates && result.duplicates.length > 0) {
+    toast(`⚠️ Duplicates found: ${result.duplicates.join(', ')}`);
+  }
 
   const status = await window.api.vault.status();
   if (status.dbPath) {
@@ -248,9 +261,36 @@ async function loadSecretsList() {
   }
 }
 
+function updateSecretCount(count) {
+  const el = document.getElementById('secret-count');
+  if (el) el.textContent = `${count} secret${count !== 1 ? 's' : ''}`;
+}
+
+function getSmartIcon(title, url) {
+  const t = (title || '').toLowerCase();
+  const u = (url || '').toLowerCase();
+  if (t.includes('database') || t.includes('postgres') || t.includes('mysql') || t.includes('mongo') || t.includes('redis') || t.includes('sql')) return '🗄️';
+  if (t.includes('api') || t.includes('token') || t.includes('key')) return '🔑';
+  if (t.includes('mercado pago') || t.includes('paypal') || t.includes('stripe') || t.includes('payment')) return '💳';
+  if (t.includes('ssh') || t.includes('server') || t.includes('vps') || t.includes('vm')) return '🖥️';
+  if (t.includes('email') || t.includes('gmail') || t.includes('smtp')) return '📧';
+  if (u && (u.includes('github') || t.includes('github'))) return '🐙';
+  if (u) return '🌐';
+  return '🔐';
+}
+
+function getFaviconUrl(url) {
+  if (!url) return null;
+  try {
+    const hostname = new URL(url.startsWith('http') ? url : 'https://' + url).hostname;
+    return `https://www.google.com/s2/favicons?domain=${hostname}&sz=32`;
+  } catch { return null; }
+}
+
 function renderSecrets(secrets) {
   const container = document.getElementById('secrets-container');
   const noSecrets = document.getElementById('no-secrets');
+  updateSecretCount(secrets.length);
 
   if (secrets.length === 0) {
     container.innerHTML = '';
@@ -259,11 +299,17 @@ function renderSecrets(secrets) {
   }
 
   noSecrets.classList.add('d-none');
-  container.innerHTML = secrets.map(s => `
+  container.innerHTML = secrets.map(s => {
+    const icon = getSmartIcon(s.title, s.url);
+    const favicon = getFaviconUrl(s.url);
+    const iconHtml = favicon
+      ? `<img src="${favicon}" width="20" height="20" class="me-2" style="border-radius:4px;vertical-align:middle" onerror="this.outerHTML='<span class=\'me-2\'>${icon}</span>'">`
+      : `<span class="me-2">${icon}</span>`;
+    return `
     <div class="card mb-2 secret-row" data-title="${escHtml(s.title)}">
       <div class="card-body py-2 px-3 d-flex justify-content-between align-items-center">
-        <div>
-          <strong>${escHtml(s.title)}</strong>
+        <div style="min-width:0;overflow:hidden">
+          ${iconHtml}<strong>${escHtml(s.title)}</strong>
           <small class="text-body-secondary ms-2">${escHtml(s.username || '')}</small>
         </div>
         <div class="secret-actions">
@@ -273,7 +319,7 @@ function renderSecrets(secrets) {
         </div>
       </div>
     </div>
-  `).join('');
+  `}).join('');
 
   // Click on row → detail
   container.querySelectorAll('.secret-row').forEach(row => {
