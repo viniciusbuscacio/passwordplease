@@ -116,7 +116,8 @@ ipcMain.handle('biometric:remove', (_e, { dbPath }) => {
 if (process.platform === 'darwin') {
   app.name = 'passwordPlease';
   app.whenReady().then(() => {
-    // Dock icon comes from .icns in the app bundle — no need to set programmatically
+    // Force PNG icon at runtime — .icns renders with gray background in macOS Dock
+    app.dock.setIcon(APP_ICON);
   });
 }
 
