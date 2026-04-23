@@ -115,10 +115,8 @@ ipcMain.handle('biometric:remove', (_e, { dbPath }) => {
 // macOS: set app name for menu bar + Dock icon
 if (process.platform === 'darwin') {
   app.name = 'passwordPlease';
-  app.whenReady().then(() => {
-    // Force PNG icon at runtime — .icns renders with gray background in macOS Dock
-    app.dock.setIcon(APP_ICON);
-  });
+  // Dock icon comes from solid-square .icns in the bundle
+  // macOS applies squircle mask automatically — do NOT use app.dock.setIcon()
 }
 
 app.whenReady().then(() => { const got = app.requestSingleInstanceLock(); if (!got) { app.quit(); return; } app.on('second-instance', () => { if (mainWindow) { if (mainWindow.isMinimized()) mainWindow.restore(); mainWindow.focus(); } }); ensureConfig(); createWindow(); });
