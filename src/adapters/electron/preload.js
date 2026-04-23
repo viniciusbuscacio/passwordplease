@@ -23,5 +23,12 @@ contextBridge.exposeInMainWorld('api', {
   config: {
     get: () => ipcRenderer.invoke('config:get'),
     set: (settings) => ipcRenderer.invoke('config:set', settings)
+  },
+  biometric: {
+    available: () => ipcRenderer.invoke('biometric:available'),
+    enrolled: (dbPath) => ipcRenderer.invoke('biometric:enrolled', { dbPath }),
+    enroll: (dbPath, masterPassword) => ipcRenderer.invoke('biometric:enroll', { dbPath, masterPassword }),
+    authenticate: (dbPath) => ipcRenderer.invoke('biometric:authenticate', { dbPath }),
+    remove: (dbPath) => ipcRenderer.invoke('biometric:remove', { dbPath })
   }
 });

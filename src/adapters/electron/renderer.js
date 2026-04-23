@@ -78,11 +78,7 @@ document.getElementById('btn-open-vault').addEventListener('click', async () => 
   const filePath = await window.api.dialog.openFile();
   if (!filePath) return;
   pendingDbPath = filePath;
-  document.getElementById('unlock-dbpath').textContent = filePath;
-  document.getElementById('unlock-password').value = '';
-  document.getElementById('unlock-error').classList.add('d-none');
-  showView('view-unlock');
-  document.getElementById('unlock-password').focus();
+  await prepareUnlockView(filePath);
 });
 
 document.getElementById('btn-create-vault').addEventListener('click', async () => {
@@ -102,11 +98,48 @@ document.getElementById('btn-open-last').addEventListener('click', async () => {
   const cfg = await window.api.config.get();
   if (!cfg?.lastOpenedDatabaseFile) return;
   pendingDbPath = cfg.lastOpenedDatabaseFile;
-  document.getElementById('unlock-dbpath').textContent = pendingDbPath;
+  await prepareUnlockView(pendingDbPath);
+});
+
+async function prepareUnlockView(dbPath) {
+  document.getElementById('unlock-dbpath').textContent = dbPath;
   document.getElementById('unlock-password').value = '';
   document.getElementById('unlock-error').classList.add('d-none');
   showView('view-unlock');
-  document.getElementById('unlock-password').focus();
+
+  // Check Touch ID availability
+  const btnTouchId = document.getElementById('btn-touchid');
+  const canBiometric = await window.api.biometric.available();
+  const isEnrolled = canBiometric && await window.api.biometric.enrolled(dbPath);
+
+  if (isEnrolled) {
+    btnTouchId.classList.remove('d-none');
+    // Auto-trigger Touch ID
+    triggerTouchId(dbPath);
+  } else {
+    btnTouchId.classList.add('d-none');
+    document.getElementById('unlock-password').focus();
+  }
+}
+
+async function triggerTouchId(dbPath) {
+  const result = await window.api.biometric.authenticate(dbPath);
+  if (result.ok) {
+    await loadSecretsList();
+  } else if (result.error !== 'canceled') {
+    // Touch ID failed (e.g. password changed), fall back to manual
+    document.getElementById('btn-touchid').classList.add('d-none');
+    document.getElementById('unlock-error').textContent = 'Touch ID failed — please enter password.';
+    document.getElementById('unlock-error').classList.remove('d-none');
+    document.getElementById('unlock-password').focus();
+  } else {
+    // User canceled — just focus password field
+    document.getElementById('unlock-password').focus();
+  }
+}
+
+document.getElementById('btn-touchid').addEventListener('click', () => {
+  if (pendingDbPath) triggerTouchId(pendingDbPath);
 });
 
 // ── Unlock form ────────────────────────────────────────
@@ -115,12 +148,31 @@ document.getElementById('form-unlock').addEventListener('submit', async (e) => {
   const pw = document.getElementById('unlock-password').value;
   const result = await window.api.vault.unlock(pendingDbPath, pw);
   if (result.ok) {
+    // After successful manual unlock, offer Touch ID enrollment
+    await offerBiometricEnrollment(pendingDbPath, pw);
     await loadSecretsList();
   } else {
+    document.getElementById('unlock-error').textContent = 'Incorrect master password.';
     document.getElementById('unlock-error').classList.remove('d-none');
     document.getElementById('unlock-password').select();
   }
 });
+
+async function offerBiometricEnrollment(dbPath, masterPassword) {
+  const canBiometric = await window.api.biometric.available();
+  if (!canBiometric) return;
+  const isEnrolled = await window.api.biometric.enrolled(dbPath);
+  if (isEnrolled) {
+    // Already enrolled — silently re-enroll to update password if changed
+    await window.api.biometric.enroll(dbPath, masterPassword);
+    return;
+  }
+  // First time — ask user
+  if (confirm('Enable Touch ID to unlock this vault next time?')) {
+    await window.api.biometric.enroll(dbPath, masterPassword);
+    toast('Touch ID enabled! 🔐');
+  }
+}
 
 document.getElementById('btn-unlock-back').addEventListener('click', () => showView('view-welcome'));
 
@@ -398,6 +450,15 @@ document.getElementById('btn-settings').addEventListener('click', async () => {
     document.getElementById('settings-close-tray').checked = cfg.closeToTray ?? true;
     document.getElementById('settings-pw-length').value = cfg.generatePasswordSize ?? 16;
   }
+  // Touch ID toggle (macOS only)
+  const canBiometric = await window.api.biometric.available();
+  const touchIdGroup = document.getElementById('settings-touchid-group');
+  if (canBiometric) {
+    touchIdGroup.classList.remove('d-none');
+    document.getElementById('settings-touchid').checked = cfg?.biometricEnabled ?? false;
+  } else {
+    touchIdGroup.classList.add('d-none');
+  }
   showView('view-settings');
 });
 
@@ -413,6 +474,18 @@ document.getElementById('form-settings').addEventListener('submit', async (e) =>
   };
   generatePasswordSize = settings.generatePasswordSize;
   await window.api.config.set(settings);
+
+  // Handle Touch ID toggle
+  const touchIdChecked = document.getElementById('settings-touchid').checked;
+  const canBiometric = await window.api.biometric.available();
+  if (canBiometric) {
+    const status = await window.api.vault.status();
+    if (!touchIdChecked && status.dbPath) {
+      await window.api.biometric.remove(status.dbPath);
+    }
+    // If enabling, enrollment happens on next manual unlock
+  }
+
   toast('Settings saved');
 
   const status = await window.api.vault.status();
