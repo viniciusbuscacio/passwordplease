@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; font-src 'self'; img-src 'self' data:;">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="../../../libs/css/bootstrap.min.css" rel="stylesheet">
+  <link href="../../../node_modules/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
+  <title>passwordPlease</title>
+  <style>
+    :root {
+      --pp-transition: 0.2s ease;
+      --pp-accent: #6d5dfc;
+      --pp-accent-hover: #5b4de0;
+      --pp-accent-soft: rgba(109, 93, 252, 0.15);
+      --pp-green: #34d399;
+      --pp-red: #f87171;
+    }
+    html { font-size: 90%; }
+    body { min-height: 100vh; display: flex; flex-direction: column; }
+    .view { display: none; }
+    .view.active { display: block; }
+
+    /* Header */
+    .pp-header { padding: 0.5rem 1rem; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--bs-border-color); user-select: none; }
+    .pp-header .brand { display: flex; align-items: center; gap: 0.5rem; font-weight: 600; font-size: 1.1rem; }
+    .pp-header .brand svg.brand-icon { width: 28px; height: 28px; border-radius: 6px; }
+    .icon-bg { fill: #1a2332; }
+    .icon-body { fill: #f0a830; }
+    .icon-shackle { fill: #6b7f8a; }
+    .icon-keyhole { fill: #4a5968; }
+    [data-bs-theme="light"] .icon-bg { fill: #1e3c78; }
+
+    /* Modern buttons */
+    .btn-primary, .btn-primary:active { background: var(--pp-accent) !important; border-color: var(--pp-accent) !important; color: #fff !important; border-radius: 0.5rem; font-weight: 500; }
+    .btn-primary:hover { background: var(--pp-accent-hover) !important; border-color: var(--pp-accent-hover) !important; box-shadow: 0 2px 12px rgba(109,93,252,0.3); }
+    .btn-outline-primary { color: var(--pp-accent) !important; border-color: var(--pp-accent) !important; border-radius: 0.5rem; }
+    .btn-outline-primary:hover { background: var(--pp-accent-soft) !important; color: var(--pp-accent) !important; border-color: var(--pp-accent) !important; }
+    .btn-outline-secondary { border-radius: 0.5rem; }
+    .btn-outline-warning { color: var(--pp-accent) !important; border-color: var(--pp-accent) !important; border-radius: 0.5rem; opacity: 0.7; }
+    .btn-outline-warning:hover { background: var(--pp-accent-soft) !important; color: var(--pp-accent) !important; opacity: 1; }
+    .btn-outline-danger { color: var(--pp-red) !important; border-color: var(--pp-red) !important; border-radius: 0.5rem; }
+    .btn-outline-danger:hover { background: rgba(248,113,113,0.15) !important; color: var(--pp-red) !important; }
+    .btn { transition: all 0.15s ease; }
+
+    /* Cards & rows */
+    .secret-row .card { border-radius: 0.6rem; border: 1px solid var(--bs-border-color); transition: all var(--pp-transition); }
+    .secret-row:hover .card, .secret-row .card:hover { border-color: var(--pp-accent); box-shadow: 0 1px 8px rgba(109,93,252,0.12); }
+    .secret-row { cursor: pointer; }
+    .secret-actions { white-space: nowrap; }
+
+    /* Form inputs */
+    .form-control:focus, .form-select:focus { border-color: var(--pp-accent); box-shadow: 0 0 0 0.2rem var(--pp-accent-soft); }
+    .form-check-input:checked { background-color: var(--pp-accent); border-color: var(--pp-accent); }
+
+    /* Welcome */
+    #view-welcome { text-align: center; padding-top: 15vh; }
+    #view-welcome img { width: 80px; height: 80px; margin-bottom: 1rem; opacity: 0.9; }
+    #view-welcome h2 { font-weight: 700; letter-spacing: -0.02em; }
+
+    /* Toast */
+    .pp-toast { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: 9999; background: var(--pp-green); color: #111; font-weight: 500; padding: 0.6rem 1.2rem; border-radius: 0.5rem; font-size: 0.9rem; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .pp-toast.show { opacity: 1; }
+
+    /* Forms */
+    .form-view { max-width: 500px; margin: 2rem auto; padding: 0 1rem; }
+    .strength-bar { height: 4px; border-radius: 2px; transition: all 0.3s; }
+
+    /* Scrollbar (webkit) */
+    ::-webkit-scrollbar { width: 6px; }
+    [data-bs-theme="dark"] ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.15); border-radius: 3px; }
+    [data-bs-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.15); border-radius: 3px; }
+
+    /* Header icon rounded */
+  </style>
+</head>
+<body>
+  <div class="pp-header">
+    <div class="brand">
+      <svg class="brand-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="28" height="28">
+        <rect class="icon-bg" width="100" height="100" rx="18"/>
+        <path class="icon-shackle" d="M35 42V32c0-8.3 6.7-15 15-15s15 6.7 15 15v10h-7V32c0-4.4-3.6-8-8-8s-8 3.6-8 8v10z"/>
+        <rect class="icon-body" x="28" y="42" width="44" height="35" rx="6"/>
+        <circle class="icon-keyhole" cx="50" cy="56" r="5"/>
+        <path class="icon-keyhole" d="M47.5 56l-1 12h7l-1-12z"/>
+      </svg>
+      <span>passwordPlease</span>
+      <span id="secret-count" class="text-body-secondary ms-2" style="font-size:0.8rem"></span>
+      <span id="header-dbname" class="text-body-secondary small"></span>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <button id="btn-lock" class="btn btn-sm btn-outline-secondary d-none" title="Lock vault"><i class="bi bi-shield-lock-fill"></i></button>
+      <button id="btn-settings" class="btn btn-sm btn-outline-secondary" title="Settings"><i class="bi bi-gear"></i></button>
+      <button id="btn-theme" class="btn btn-sm btn-outline-secondary" title="Toggle theme"><i class="bi bi-moon-stars"></i></button>
+    </div>
+  </div>
+
+  <div id="view-welcome" class="view active container">
+    <img src="../../../images/icon.png" alt="logo" data-icon-base="icon">
+    <h2 class="mb-4">passwordPlease</h2>
+    <p class="text-body-secondary mb-4">Your secrets, your rules.</p>
+    <div class="d-flex flex-column align-items-center gap-2" style="max-width: 300px; margin: 0 auto;">
+      <button id="btn-open-vault" class="btn btn-primary w-100"><i class="bi bi-folder2-open me-2"></i>Open Vault</button>
+      <button id="btn-create-vault" class="btn btn-outline-primary w-100"><i class="bi bi-plus-circle me-2"></i>Create New Vault</button>
+      <button id="btn-open-last" class="btn btn-outline-secondary w-100 d-none"><i class="bi bi-clock-history me-2"></i>Open Last Vault</button>
+    </div>
+  </div>
+
+  <div id="view-unlock" class="view container">
+    <div class="form-view">
+      <h4 class="mb-3"><i class="bi bi-shield-lock me-2"></i>Unlock Vault</h4>
+      <p id="unlock-dbpath" class="text-body-secondary small text-truncate mb-3"></p>
+      <form id="form-unlock">
+        <div class="mb-3">
+          <label for="unlock-password" class="form-label">Master Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="unlock-password" required autofocus>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePwVis('unlock-password', this)"><i class="bi bi-eye"></i></button>
+          </div>
+          <div id="unlock-error" class="text-danger small mt-1 d-none">Incorrect master password.</div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary"><i class="bi bi-unlock me-1"></i>Unlock</button>
+          <button type="button" class="btn btn-outline-primary d-none" id="btn-touchid"><i class="bi bi-fingerprint me-1"></i>Touch ID</button>
+          <button type="button" class="btn btn-outline-secondary" id="btn-unlock-back">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="view-create" class="view container">
+    <div class="form-view">
+      <h4 class="mb-3"><i class="bi bi-plus-circle me-2"></i>Create New Vault</h4>
+      <p id="create-dbpath" class="text-body-secondary small text-truncate mb-3"></p>
+      <form id="form-create">
+        <div class="mb-3">
+          <label for="create-password" class="form-label">Master Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="create-password" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePwVis('create-password', this)"><i class="bi bi-eye"></i></button>
+          </div>
+          <div class="strength-bar mt-1" id="create-strength"></div>
+        </div>
+        <div class="mb-3">
+          <label for="create-confirm" class="form-label">Confirm Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="create-confirm" required>
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePwVis('create-confirm', this)"><i class="bi bi-eye"></i></button>
+          </div>
+          <div id="create-mismatch" class="text-danger small mt-1 d-none">Passwords don't match.</div>
+        </div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary" id="btn-create-submit" disabled><i class="bi bi-shield-check me-1"></i>Create</button>
+          <button type="button" class="btn btn-outline-secondary" id="btn-create-back">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="view-list" class="view container py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+      <h5 class="mb-0"><i class="bi bi-key me-2"></i>Secrets</h5>
+      <button id="btn-add-secret" class="btn btn-primary btn-sm"><i class="bi bi-plus-lg me-1"></i>Add New</button>
+    </div>
+    <input type="text" id="search-input" class="form-control mb-3" placeholder="Search secrets...">
+    <div id="secrets-container"></div>
+    <p id="no-secrets" class="text-body-secondary text-center mt-4 d-none"><i class="bi bi-inbox me-2"></i>No secrets yet. Click "Add New" to get started.</p>
+  </div>
+
+  <div id="view-edit" class="view container">
+    <div class="form-view">
+      <h4 id="edit-title-label" class="mb-3"><i class="bi bi-pencil-square me-2"></i>Add Secret</h4>
+      <form id="form-edit">
+        <input type="hidden" id="edit-id">
+        <div class="mb-3"><label for="edit-title" class="form-label">Title</label><input type="text" class="form-control" id="edit-title" required></div>
+        <div class="mb-3"><label for="edit-username" class="form-label">Username</label><input type="text" class="form-control" id="edit-username"></div>
+        <div class="mb-3">
+          <label for="edit-password" class="form-label">Password</label>
+          <div class="input-group">
+            <input type="password" class="form-control" id="edit-password">
+            <button type="button" class="btn btn-outline-secondary" onclick="togglePwVis('edit-password', this)"><i class="bi bi-eye"></i></button>
+            <button type="button" class="btn btn-outline-primary" id="btn-generate-pw" title="Generate password"><i class="bi bi-shuffle"></i></button>
+          </div>
+        </div>
+        <div class="mb-3"><label for="edit-url" class="form-label">URL</label><input type="text" class="form-control" id="edit-url" placeholder="https://"></div>
+        <div class="mb-3"><label for="edit-notes" class="form-label">Notes</label><textarea class="form-control" id="edit-notes" rows="3"></textarea></div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+          <button type="button" class="btn btn-outline-secondary" id="btn-edit-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div id="view-detail" class="view container">
+    <div class="form-view">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h4 id="detail-title" class="mb-0"></h4>
+        <div class="d-flex gap-1">
+          <button class="btn btn-sm btn-outline-primary" id="btn-detail-edit" title="Edit"><i class="bi bi-pencil"></i></button>
+          <button class="btn btn-sm btn-outline-danger" id="btn-detail-delete" title="Delete"><i class="bi bi-trash"></i></button>
+        </div>
+      </div>
+      <table class="table table-borderless mb-0"><tbody>
+        <tr><td class="text-body-secondary" style="width:120px;min-width:120px;vertical-align:top">Username</td><td><span id="detail-username"></span><button class="btn btn-sm btn-outline-secondary ms-2 copy-btn" data-field="username" title="Copy"><i class="bi bi-clipboard"></i></button></td></tr>
+        <tr><td class="text-body-secondary" style="width:120px;min-width:120px;vertical-align:top">Password</td><td><code id="detail-password" class="user-select-all">••••••••</code><button class="btn btn-sm btn-outline-secondary ms-1" id="btn-detail-show-pw" title="Show"><i class="bi bi-eye"></i></button><button class="btn btn-sm btn-outline-secondary ms-1 copy-btn" data-field="password" title="Copy"><i class="bi bi-clipboard"></i></button></td></tr>
+        <tr><td class="text-body-secondary" style="width:120px;min-width:120px;vertical-align:top">URL</td><td><a id="detail-url" href="#" target="_blank" rel="noopener"></a></td></tr>
+        <tr><td class="text-body-secondary" style="width:120px;min-width:120px;vertical-align:top">Notes</td><td><span id="detail-notes" class="text-break"></span></td></tr>
+      </tbody></table>
+      <div class="mt-3"><button class="btn btn-outline-secondary" id="btn-detail-back"><i class="bi bi-arrow-left me-1"></i>Back</button></div>
+    </div>
+  </div>
+
+  <div id="view-settings" class="view container">
+    <div class="form-view">
+      <h4 class="mb-3"><i class="bi bi-gear me-2"></i>Settings</h4>
+      <form id="form-settings">
+        <div class="mb-3 form-check form-switch"><input type="checkbox" class="form-check-input" id="settings-autolock-enabled"><label class="form-check-label" for="settings-autolock-enabled">Auto-lock after inactivity</label></div>
+        <div class="row mb-3"><div class="col"><input type="number" class="form-control" id="settings-autolock-time" min="1" value="5"></div><div class="col"><select class="form-select" id="settings-autolock-unit"><option value="seconds">Seconds</option><option value="minutes" selected>Minutes</option><option value="hours">Hours</option></select></div></div>
+        <div class="mb-3 form-check form-switch"><input type="checkbox" class="form-check-input" id="settings-lock-minimize"><label class="form-check-label" for="settings-lock-minimize">Lock on minimize</label></div>
+        <div class="mb-3 form-check form-switch"><input type="checkbox" class="form-check-input" id="settings-close-tray"><label class="form-check-label" for="settings-close-tray">Close to system tray</label></div>
+        <div class="mb-3 form-check form-switch d-none" id="settings-touchid-group"><input type="checkbox" class="form-check-input" id="settings-touchid"><label class="form-check-label" for="settings-touchid"><i class="bi bi-fingerprint me-1"></i>Unlock with Touch ID</label></div>
+        <div class="mb-3"><label for="settings-pw-length" class="form-label">Generated password length</label><input type="number" class="form-control" id="settings-pw-length" min="8" max="128" value="16" style="max-width:120px"></div>
+        <div class="d-flex gap-2">
+          <button type="submit" class="btn btn-primary"><i class="bi bi-check-lg me-1"></i>Save</button>
+          <button type="button" class="btn btn-outline-secondary" id="btn-settings-cancel">Cancel</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="pp-toast" id="toast"></div>
+  <script src="../../../libs/js/bootstrap.bundle.min.js"></script>
+  <script src="renderer.js"></script>
+</body>
+</html>
