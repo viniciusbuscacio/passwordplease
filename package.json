@@ -10,7 +10,7 @@
   "scripts": {
     "build": "tsc && tsc -p src/adapters/electron/tsconfig.renderer.json && node copy-assets.js",
     "start": "npm run build && electron .",
-    "test": "tsx --test tests/**/*.test.ts",
+    "test": "npm rebuild better-sqlite3 && tsx --test tests/**/*.test.ts",
     "build:mac": "npm run build && electron-builder --mac --arm64",
     "build:win": "npm run build && electron-builder --win",
     "build:linux": "npm run build && electron-builder --linux",
