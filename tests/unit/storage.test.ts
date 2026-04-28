@@ -1,17 +1,23 @@
 'use strict';
-const { describe, it, before, after } = require('node:test');
-const assert = require('node:assert/strict');
-const fs = require('node:fs');
-const path = require('node:path');
-const os = require('node:os');
-const SqliteStorageProvider = require('../../src/infrastructure/SqliteStorageProvider');
+import { describe, it, before, after } from 'node:test';
+import assert from 'node:assert/strict';
+import fs from 'node:fs';
+import path from 'node:path';
+import os from 'node:os';
+import { SqliteStorageProvider } from '../../src/infrastructure/SqliteStorageProvider';
 
 describe('SqliteStorageProvider', () => {
   const dbPath = path.join(os.tmpdir(), `pp-storage-test-${Date.now()}.db`);
-  let storage;
+  let storage: SqliteStorageProvider;
 
-  before(async () => { storage = new SqliteStorageProvider(); await storage.init(dbPath); });
-  after(async () => { try { await storage.close(); } catch {} try { fs.unlinkSync(dbPath); } catch {} });
+  before(async () => {
+    storage = new SqliteStorageProvider();
+    await storage.init(dbPath);
+  });
+  after(async () => {
+    try { await storage.close(); } catch {}
+    try { fs.unlinkSync(dbPath); } catch {}
+  });
 
   it('should initialize and create db file', () => {
     assert.ok(fs.existsSync(dbPath));
@@ -26,19 +32,21 @@ describe('SqliteStorageProvider', () => {
     };
     await storage.createTables(meta);
     const got = await storage.getMetadata();
-    assert.equal(got.mountKeyCiphered, meta.mountKeyCiphered);
-    assert.equal(got.masterPasswordHash, meta.masterPasswordHash);
-    assert.equal(got.salt, meta.salt);
-    assert.equal(got.version, '2.0');
+    assert.ok(got);
+    assert.equal(got!.mountKeyCiphered, meta.mountKeyCiphered);
+    assert.equal(got!.masterPasswordHash, meta.masterPasswordHash);
+    assert.equal(got!.salt, meta.salt);
+    assert.equal(got!.version, '2.0');
   });
 
   it('should insert and retrieve a secret', async () => {
     const secret = { id: 'sec-1', title: 'enc-title', username: 'enc-user', password: 'enc-pass', url: 'enc-url', notes: 'enc-notes', categoryId: null };
     await storage.insertSecret(secret);
     const got = await storage.getSecretById('sec-1');
-    assert.equal(got.id, 'sec-1');
-    assert.equal(got.title, 'enc-title');
-    assert.equal(got.password, 'enc-pass');
+    assert.ok(got);
+    assert.equal(got!.id, 'sec-1');
+    assert.equal(got!.title, 'enc-title');
+    assert.equal(got!.password, 'enc-pass');
   });
 
   it('should list all secrets', async () => {
@@ -50,8 +58,9 @@ describe('SqliteStorageProvider', () => {
   it('should update a secret', async () => {
     await storage.updateSecret('sec-1', { title: 'updated-title', username: 'enc-user', password: 'new-pass', url: 'enc-url', notes: 'enc-notes', categoryId: null });
     const got = await storage.getSecretById('sec-1');
-    assert.equal(got.title, 'updated-title');
-    assert.equal(got.password, 'new-pass');
+    assert.ok(got);
+    assert.equal(got!.title, 'updated-title');
+    assert.equal(got!.password, 'new-pass');
   });
 
   it('should delete a secret', async () => {

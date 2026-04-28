@@ -1,14 +1,18 @@
 'use strict';
-const { VaultLockedError, InvalidPasswordError } = require('../domain/errors');
 
-class ChangeMasterPassword {
-  constructor(cp, sp) { this.crypto = cp; this.storage = sp; }
+import { VaultLockedError, InvalidPasswordError } from '../domain/errors';
+import { ICryptoProvider } from '../domain/interfaces/ICryptoProvider';
+import { IStorageProvider } from '../domain/interfaces/IStorageProvider';
 
-  async execute(currentPassword, newPassword, mountKey) {
+export class ChangeMasterPassword {
+  constructor(private crypto: ICryptoProvider, private storage: IStorageProvider) {}
+
+  async execute(currentPassword: string, newPassword: string, mountKey: string | null): Promise<void> {
     if (!mountKey) throw new VaultLockedError();
 
     // Verify current password
     const metadata = await this.storage.getMetadata();
+    if (!metadata) throw new Error('Vault metadata not found.');
     const isValid = await this.crypto.verifyPassword(currentPassword, metadata.masterPasswordHash);
     if (!isValid) throw new InvalidPasswordError();
 
@@ -28,5 +32,3 @@ class ChangeMasterPassword {
     });
   }
 }
-
-module.exports = ChangeMasterPassword;

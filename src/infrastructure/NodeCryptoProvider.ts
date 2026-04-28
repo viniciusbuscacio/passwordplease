@@ -1,18 +1,26 @@
 'use strict';
 
-const crypto = require('node:crypto');
-const bcrypt = require('bcrypt');
-const ICryptoProvider = require('../domain/interfaces/ICryptoProvider');
+import crypto from 'node:crypto';
+import bcrypt from 'bcrypt';
+import { ICryptoProvider } from '../domain/interfaces/ICryptoProvider';
 
 const SALT_ROUNDS = 12;
 const SCRYPT_PARAMS = { N: 16384, r: 8, p: 1, maxmem: 64 * 1024 * 1024 };
 
-class NodeCryptoProvider extends ICryptoProvider {
-  generateMountKey() { return crypto.randomBytes(32).toString('hex'); }
-  generateSalt() { return crypto.randomBytes(16).toString('hex'); }
-  deriveKey(password, salt) { return crypto.scryptSync(password, Buffer.from(salt, 'hex'), 32, SCRYPT_PARAMS); }
+export class NodeCryptoProvider implements ICryptoProvider {
+  generateMountKey(): string {
+    return crypto.randomBytes(32).toString('hex');
+  }
 
-  encryptData(plaintext, keyHex) {
+  generateSalt(): string {
+    return crypto.randomBytes(16).toString('hex');
+  }
+
+  deriveKey(password: string, salt: string): Buffer {
+    return crypto.scryptSync(password, Buffer.from(salt, 'hex'), 32, SCRYPT_PARAMS);
+  }
+
+  encryptData(plaintext: string | null, keyHex: string): string | null {
     if (plaintext === null || plaintext === undefined) return null;
     const key = Buffer.from(keyHex, 'hex');
     const iv = crypto.randomBytes(12);
@@ -23,7 +31,7 @@ class NodeCryptoProvider extends ICryptoProvider {
     return `${iv.toString('hex')}:${tag}:${encrypted}`;
   }
 
-  decryptData(ciphertext, keyHex) {
+  decryptData(ciphertext: string | null, keyHex: string): string | null {
     if (ciphertext === null || ciphertext === undefined) return null;
     const key = Buffer.from(keyHex, 'hex');
     const [ivHex, tagHex, encryptedHex] = ciphertext.split(':');
@@ -34,7 +42,7 @@ class NodeCryptoProvider extends ICryptoProvider {
     return decrypted;
   }
 
-  encryptMountKey(mountKeyHex, derivedKey) {
+  encryptMountKey(mountKeyHex: string, derivedKey: Buffer): string {
     const iv = crypto.randomBytes(12);
     const cipher = crypto.createCipheriv('aes-256-gcm', derivedKey, iv);
     let encrypted = cipher.update(mountKeyHex, 'utf8', 'hex');
@@ -43,7 +51,7 @@ class NodeCryptoProvider extends ICryptoProvider {
     return `${iv.toString('hex')}:${tag}:${encrypted}`;
   }
 
-  decryptMountKey(ciphertext, derivedKey) {
+  decryptMountKey(ciphertext: string, derivedKey: Buffer): string {
     const [ivHex, tagHex, encryptedHex] = ciphertext.split(':');
     const decipher = crypto.createDecipheriv('aes-256-gcm', derivedKey, Buffer.from(ivHex, 'hex'));
     decipher.setAuthTag(Buffer.from(tagHex, 'hex'));
@@ -52,8 +60,11 @@ class NodeCryptoProvider extends ICryptoProvider {
     return decrypted;
   }
 
-  async hashPassword(password) { return bcrypt.hash(password, SALT_ROUNDS); }
-  async verifyPassword(password, hash) { return bcrypt.compare(password, hash); }
-}
+  async hashPassword(password: string): Promise<string> {
+    return bcrypt.hash(password, SALT_ROUNDS);
+  }
 
-module.exports = NodeCryptoProvider;
+  async verifyPassword(password: string, hash: string): Promise<boolean> {
+    return bcrypt.compare(password, hash);
+  }
+}

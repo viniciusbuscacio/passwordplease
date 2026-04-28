@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ES2022",
+    "ignoreDeprecations": "6.0",
+    "lib": ["ES2022", "DOM"],
+    "outDir": "../../../out/adapters/electron",
+    "rootDir": ".",
+    "strict": true,
+    "skipLibCheck": true,
+    "sourceMap": true,
+    "types": []
+  },
+  "include": ["renderer.ts"],
+  "exclude": []
+}
