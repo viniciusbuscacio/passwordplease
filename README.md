@@ -14,6 +14,7 @@
 - **100% offline** — Your vault is a local file. No accounts, no subscriptions, no servers.
 - **Strong encryption** — AES-256-GCM + scrypt. Your data is unreadable without the master password.
 - **GUI + CLI** — Desktop app for daily use, command-line for scripting and automation.
+- **Agent-friendly** — Built for AI agents and automation. The CLI works headless on servers, supports env vars (`PP_VAULT`, `PP_MASTER_PASSWORD`), outputs JSON (`--json`), and has a programmatic Node.js API. Ready for MCP servers, LLM tool-use, CI/CD pipelines, and any workflow that needs secrets without a browser.
 - **Portable** — The vault is a single `.db` file you can copy, back up, or sync however you want.
 - **Open source** — Read every line. Zero telemetry, zero tracking, zero cloud dependencies.
 
