@@ -86,11 +86,11 @@ function showView(id: string): void {
   document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
   document.getElementById(id)!.classList.add('active');
 
-  const lockBtn = document.getElementById('btn-lock')!;
+  const lockWrap = document.getElementById('btn-lock-wrap')!;
   if (id === 'view-list' || id === 'view-edit' || id === 'view-detail') {
-    lockBtn.classList.remove('d-none');
+    lockWrap.classList.remove('d-none');
   } else {
-    lockBtn.classList.add('d-none');
+    lockWrap.classList.add('d-none');
   }
 }
 
@@ -106,12 +106,8 @@ function setTheme(theme: string): void {
   localStorage.setItem('pp-theme', theme);
   const icon = document.querySelector('#btn-theme i')!;
   icon.className = theme === 'dark' ? 'bi bi-sun' : 'bi bi-moon-stars';
-
-  const iconSuffix = theme === 'light' ? '-light' : '';
-  document.querySelectorAll<HTMLImageElement>('img[data-icon-base]').forEach(img => {
-    const base = img.dataset.iconBase;
-    img.src = `../../../images/${base}${iconSuffix}.png`;
-  });
+  const label = document.getElementById('theme-label');
+  if (label) label.textContent = theme === 'dark' ? 'Light' : 'Dark';
 }
 
 document.getElementById('btn-theme')!.addEventListener('click', () => {
@@ -242,7 +238,7 @@ async function offerBiometricEnrollment(dbPath: string, masterPassword: string):
   }
   if (confirm('Enable Touch ID to unlock this vault next time?')) {
     await window.api.biometric.enroll(dbPath, masterPassword);
-    toast('Touch ID enabled! 🔐');
+    toast('Touch ID enabled');
   }
 }
 
@@ -297,7 +293,8 @@ window.api.vault.onLocked(() => goToWelcome());
 function goToWelcome(): void {
   allSecrets = [];
   currentSecret = null;
-  document.getElementById('header-dbname')!.textContent = '';
+  setVaultInfo('');
+  setVaultInfo('');
   showView('view-welcome');
   checkLastVault();
 }
@@ -313,19 +310,18 @@ async function loadSecretsList(): Promise<void> {
   showView('view-list');
 
   if (result.duplicates && result.duplicates.length > 0) {
-    toast(`⚠️ Duplicates found: ${result.duplicates.join(', ')}`);
+    toast(`Duplicates found: ${result.duplicates.join(', ')}`);
   }
 
   const status = await window.api.vault.status();
   if (status.dbPath) {
     const name = status.dbPath.split(/[/\\]/).pop();
-    document.getElementById('header-dbname')!.textContent = `— ${name}`;
+    setVaultInfo(`${allSecrets.length} secret${allSecrets.length !== 1 ? 's' : ''} — ${name}`);
   }
 }
 
-function updateSecretCount(count: number): void {
-  const el = document.getElementById('secret-count');
-  if (el) el.textContent = `${count} secret${count !== 1 ? 's' : ''}`;
+function updateSecretCount(_count: number): void {
+  // Count is now shown in status bar via setVaultInfo()
 }
 
 function getSmartIcon(title: string, url?: string | null): string {
@@ -375,7 +371,10 @@ function renderSecrets(secrets: ListedSecretView[]): void {
           <small class="text-body-secondary ms-2">${escHtml(s.username || '')}</small>
         </div>
         <div class="secret-actions">
-          <button class="btn btn-sm btn-outline-secondary copy-pw-btn" data-title="${escHtml(s.title)}" title="Copy password">
+          <button class="btn btn-sm btn-outline-secondary copy-user-btn" data-username="${escHtml(s.username || '')}" title="Copy Username" data-status="Copy the username to clipboard.">
+            <i class="bi bi-person"></i>
+          </button>
+          <button class="btn btn-sm btn-outline-secondary copy-pw-btn" data-title="${escHtml(s.title)}" title="Copy Password" data-status="Copy the password to clipboard.">
             <i class="bi bi-clipboard-check"></i>
           </button>
         </div>
@@ -386,8 +385,19 @@ function renderSecrets(secrets: ListedSecretView[]): void {
 
   container.querySelectorAll('.secret-row').forEach(row => {
     row.addEventListener('click', (e: Event) => {
-      if ((e.target as HTMLElement).closest('.copy-pw-btn')) return;
+      if ((e.target as HTMLElement).closest('.copy-pw-btn') || (e.target as HTMLElement).closest('.copy-user-btn')) return;
       openDetail((row as HTMLElement).dataset.title!);
+    });
+  });
+
+  container.querySelectorAll('.copy-user-btn').forEach(btn => {
+    btn.addEventListener('click', async (e: Event) => {
+      e.stopPropagation();
+      const username = (btn as HTMLElement).dataset.username;
+      if (username) {
+        await navigator.clipboard.writeText(username);
+        toast('Username copied');
+      }
     });
   });
 
@@ -430,9 +440,9 @@ async function openDetail(title: string): Promise<void> {
   if (currentSecret.url) {
     urlEl.textContent = currentSecret.url;
     urlEl.href = currentSecret.url;
-    urlEl.parentElement!.parentElement!.classList.remove('d-none');
   } else {
-    urlEl.parentElement!.parentElement!.classList.add('d-none');
+    urlEl.textContent = '—';
+    urlEl.removeAttribute('href');
   }
 
   document.getElementById('detail-notes')!.textContent = currentSecret.notes || '—';
@@ -499,7 +509,7 @@ function openEditForm(secret: SecretView | null): void {
   (document.getElementById('edit-id') as HTMLInputElement).value = isEdit ? secret!.id : '';
   (document.getElementById('edit-title') as HTMLInputElement).value = isEdit ? secret!.title : '';
   (document.getElementById('edit-username') as HTMLInputElement).value = isEdit ? (secret!.username || '') : '';
-  (document.getElementById('edit-password') as HTMLInputElement).value = isEdit ? (secret!.password || '') : generatePassword(generatePasswordSize);
+  (document.getElementById('edit-password') as HTMLInputElement).value = isEdit ? (secret!.password || '') : '';
   (document.getElementById('edit-url') as HTMLInputElement).value = isEdit ? (secret!.url || '') : '';
   (document.getElementById('edit-notes') as HTMLTextAreaElement).value = isEdit ? (secret!.notes || '') : '';
 
@@ -616,6 +626,20 @@ async function checkLastVault(): Promise<void> {
     btn.classList.add('d-none');
   }
 }
+
+// ── Status bar ─────────────────────────────────────────
+const statusText = document.getElementById('status-text');
+const statusVault = document.getElementById('status-vault');
+function setStatus(msg: string): void { if (statusText) statusText.textContent = msg; }
+function setVaultInfo(info: string): void { if (statusVault) statusVault.textContent = info; }
+document.addEventListener('mouseover', (e: MouseEvent) => {
+  const el = (e.target as HTMLElement).closest('[data-status]') as HTMLElement | null;
+  if (el) setStatus(el.dataset.status!);
+});
+document.addEventListener('mouseout', (e: MouseEvent) => {
+  const el = (e.target as HTMLElement).closest('[data-status]') as HTMLElement | null;
+  if (el) setStatus('Ready');
+});
 
 (async function init(): Promise<void> {
   initTheme();
