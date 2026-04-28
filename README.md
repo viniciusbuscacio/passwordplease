@@ -3,6 +3,7 @@
 **A simple, offline password manager that keeps your secrets encrypted on your machine — not on someone else's cloud. Runs on Windows, macOS, and Linux.**
 
 ![License](https://img.shields.io/badge/license-CC0--1.0-blue)
+![TypeScript](https://img.shields.io/badge/TypeScript-strict-blue?logo=typescript)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-green)
 ![Tests](https://img.shields.io/badge/tests-52%2F52-brightgreen)
 ![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
@@ -115,7 +116,7 @@ The vault file is useless without the master password. There are no backdoors, n
 
 ## Architecture
 
-Built with Clean Architecture — domain logic is decoupled from storage and UI:
+Built with **TypeScript** (strict mode) and Clean Architecture — domain logic is decoupled from storage and UI:
 
 ```
 Adapters (CLI, Electron, API)
@@ -136,11 +137,14 @@ git clone https://github.com/viniciusbuscacio/passwordplease.git
 cd passwordplease
 npm install
 
+# Build TypeScript → JavaScript
+npm run build
+
 # Run the desktop app
 npm start
 
 # Run tests (52 tests: unit + integration + edge cases)
-node --test tests/**/*.test.js
+npm test
 
 # Build for your platform
 npm run build:mac     # macOS DMG + ZIP (arm64)
@@ -151,6 +155,7 @@ npm run build:linux   # Linux AppImage (x64)
 ## Roadmap
 
 - [x] Clean Architecture rewrite
+- [x] TypeScript migration (strict mode)
 - [x] Modern crypto (AES-256-GCM + scrypt)
 - [x] CLI adapter
 - [x] Electron GUI (dark mode, Bootstrap 5.3)

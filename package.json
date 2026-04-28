@@ -3,26 +3,29 @@
   "productName": "passwordPlease",
   "version": "2.0.0",
   "description": "A secure password manager with Clean Architecture",
-  "main": "src/adapters/electron/main.js",
+  "main": "out/adapters/electron/main.js",
   "bin": {
-    "pp": "src/adapters/cli/cli.js"
+    "pp": "out/adapters/cli/cli.js"
   },
   "scripts": {
-    "start": "electron .",
-    "test": "node --test tests/**/*.test.js",
-    "build:mac": "electron-builder --mac --arm64",
-    "build:win": "electron-builder --win",
-    "build:linux": "electron-builder --linux",
+    "build": "tsc && tsc -p src/adapters/electron/tsconfig.renderer.json && node copy-assets.js",
+    "start": "npm run build && electron .",
+    "test": "tsx --test tests/**/*.test.ts",
+    "build:mac": "npm run build && electron-builder --mac --arm64",
+    "build:win": "npm run build && electron-builder --win",
+    "build:linux": "npm run build && electron-builder --linux",
     "postinstall": "node post-build.js"
   },
   "build": {
     "appId": "com.buscacio.passwordplease",
     "productName": "passwordPlease",
     "files": [
-      "src/**/*",
+      "out/**/*",
+      "build/**/*",
       "libs/**/*",
       "images/**/*",
       "!**/*.test.js",
+      "!**/*.test.ts",
       "!tests/**/*"
     ],
     "directories": {
@@ -73,8 +76,14 @@
   "author": "Vinicius Buscacio",
   "license": "CC0-1.0",
   "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/better-sqlite3": "^7.6.13",
+    "@types/node": "^25.6.0",
+    "@types/uuid": "^10.0.0",
     "electron": "^41.2.2",
-    "electron-builder": "^26.8.1"
+    "electron-builder": "^26.8.1",
+    "tsx": "^4.21.0",
+    "typescript": "^6.0.3"
   },
   "dependencies": {
     "bcrypt": "^5.1.0",

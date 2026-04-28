@@ -1,9 +1,14 @@
 'use strict';
-const { v4: uuidv4 } = require('uuid');
-const VaultMetadata = require('../domain/entities/VaultMetadata');
-class CreateVault {
-  constructor(cp, sp) { this.crypto = cp; this.storage = sp; }
-  async execute(masterPassword) {
+
+import { v4 as uuidv4 } from 'uuid';
+import { VaultMetadata } from '../domain/entities/VaultMetadata';
+import { ICryptoProvider } from '../domain/interfaces/ICryptoProvider';
+import { IStorageProvider } from '../domain/interfaces/IStorageProvider';
+
+export class CreateVault {
+  constructor(private crypto: ICryptoProvider, private storage: IStorageProvider) {}
+
+  async execute(masterPassword: string): Promise<string> {
     const mountKey = this.crypto.generateMountKey();
     const salt = this.crypto.generateSalt();
     const masterPasswordHash = await this.crypto.hashPassword(masterPassword);
@@ -13,9 +18,8 @@ class CreateVault {
     await this.storage.createTables(metadata);
     for (const name of ['Email', 'Work', 'Personal']) {
       const id = Buffer.from(uuidv4()).toString('base64');
-      await this.storage.insertCategory({ id, name: this.crypto.encryptData(name, mountKey) });
+      await this.storage.insertCategory({ id, name: this.crypto.encryptData(name, mountKey)! });
     }
     return mountKey;
   }
 }
-module.exports = CreateVault;
