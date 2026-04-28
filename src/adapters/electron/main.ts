@@ -179,6 +179,18 @@ ipcMain.handle('secrets:delete', async (_e: IpcMainInvokeEvent, { id }: { id: st
   catch (err: any) { return { ok: false, error: err.message }; }
 });
 
+ipcMain.handle('categories:list', async () => {
+  if (!controller?.isUnlocked()) return { ok: false, error: 'Vault is locked', categories: [] };
+  try { const categories = await controller.listCategories(); return { ok: true, categories }; }
+  catch (err: any) { return { ok: false, error: err.message, categories: [] }; }
+});
+
+ipcMain.handle('categories:add', async (_e: IpcMainInvokeEvent, { name }: { name: string }) => {
+  if (!controller?.isUnlocked()) return { ok: false, error: 'Vault is locked' };
+  try { await controller.addCategory(name); return { ok: true }; }
+  catch (err: any) { return { ok: false, error: err.message }; }
+});
+
 ipcMain.handle('dialog:openFile', async () => {
   const r = await dialog.showOpenDialog(mainWindow!, {
     title: 'Open Vault', properties: ['openFile'],

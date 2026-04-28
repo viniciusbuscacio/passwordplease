@@ -16,6 +16,10 @@ contextBridge.exposeInMainWorld('api', {
     set: (data: any, existingId?: string) => ipcRenderer.invoke('secrets:set', { data, existingId }),
     delete: (id: string) => ipcRenderer.invoke('secrets:delete', { id })
   },
+  categories: {
+    list: () => ipcRenderer.invoke('categories:list'),
+    add: (name: string) => ipcRenderer.invoke('categories:add', { name })
+  },
   dialog: {
     openFile: () => ipcRenderer.invoke('dialog:openFile'),
     saveFile: () => ipcRenderer.invoke('dialog:saveFile')

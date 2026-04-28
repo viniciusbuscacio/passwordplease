@@ -52,11 +52,14 @@ Perfect for headless servers, automation, and scripting. No GUI required.
 git clone https://github.com/viniciusbuscacio/passwordplease.git
 cd passwordplease && npm install
 
+# Build TypeScript first
+npm run build
+
 # Create a vault
-node src/adapters/cli/cli.js init /path/to/vault.db
+node out/adapters/cli/cli.js init /path/to/vault.db
 
 # Store a secret
-node src/adapters/cli/cli.js set "AWS Token" \
+node out/adapters/cli/cli.js set "AWS Token" \
   --username "admin" \
   --password "AKIA..." \
   --url "https://aws.amazon.com" \
@@ -64,14 +67,14 @@ node src/adapters/cli/cli.js set "AWS Token" \
   --master-password "your-master-password"
 
 # List all entries
-node src/adapters/cli/cli.js list --vault /path/to/vault.db --master-password "..."
+node out/adapters/cli/cli.js list --vault /path/to/vault.db --master-password "..."
 
 # Get a secret (plain text or JSON)
-node src/adapters/cli/cli.js get "AWS Token" --field password --vault /path/to/vault.db --master-password "..."
-node src/adapters/cli/cli.js get "AWS Token" --json --vault /path/to/vault.db --master-password "..."
+node out/adapters/cli/cli.js get "AWS Token" --field password --vault /path/to/vault.db --master-password "..."
+node out/adapters/cli/cli.js get "AWS Token" --json --vault /path/to/vault.db --master-password "..."
 
 # Delete
-node src/adapters/cli/cli.js delete "AWS Token" --vault /path/to/vault.db --master-password "..."
+node out/adapters/cli/cli.js delete "AWS Token" --vault /path/to/vault.db --master-password "..."
 ```
 
 ### Environment Variables
@@ -90,9 +93,9 @@ pp get "AWS Token" --field password
 ### Programmatic API
 
 ```js
-const VaultController = require('./src/controller/VaultController');
-const NodeCryptoProvider = require('./src/infrastructure/NodeCryptoProvider');
-const SqliteStorageProvider = require('./src/infrastructure/SqliteStorageProvider');
+const { VaultController } = require('./out/controller/VaultController');
+const { NodeCryptoProvider } = require('./out/infrastructure/NodeCryptoProvider');
+const { SqliteStorageProvider } = require('./out/infrastructure/SqliteStorageProvider');
 
 const ctrl = new VaultController(new NodeCryptoProvider(), new SqliteStorageProvider());
 await ctrl.unlock('/path/to/vault.db', 'master-password');

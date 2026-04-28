@@ -34,9 +34,20 @@ interface BiometricApi {
   remove: (dbPath: string) => Promise<{ ok: boolean; error?: string }>;
 }
 
+interface CategoriesApi {
+  list: () => Promise<{ ok: boolean; categories?: CategoryView[]; error?: string }>;
+  add: (name: string) => Promise<{ ok: boolean; error?: string }>;
+}
+
+interface CategoryView {
+  id: string;
+  name: string;
+}
+
 interface WindowApi {
   vault: VaultApi;
   secrets: SecretsApi;
+  categories: CategoriesApi;
   dialog: DialogApi;
   config: ConfigApi;
   biometric: BiometricApi;
@@ -80,6 +91,7 @@ let allSecrets: ListedSecretView[] = [];
 let currentSecret: SecretView | null = null;
 let pendingDbPath: string | null = null;
 let generatePasswordSize = 16;
+let selectedCategory: string = 'all';
 
 // ── View management ────────────────────────────────────
 function showView(id: string): void {
@@ -305,7 +317,8 @@ async function loadSecretsList(): Promise<void> {
   if (!result.ok) { toast('Error: ' + result.error); return; }
 
   allSecrets = (result.secrets || []).sort((a, b) => a.title.localeCompare(b.title));
-  renderSecrets(allSecrets);
+  await loadCategoryBar();
+  filterAndRenderSecrets();
   updateSecretCount(allSecrets.length);
   showView('view-list');
 
@@ -415,12 +428,54 @@ function renderSecrets(secrets: ListedSecretView[]): void {
 }
 
 // Search
-document.getElementById('search-input')!.addEventListener('input', (e: Event) => {
-  const q = (e.target as HTMLInputElement).value.toLowerCase();
-  const filtered = allSecrets.filter(s =>
-    s.title.toLowerCase().includes(q) || (s.username || '').toLowerCase().includes(q)
-  );
+document.getElementById('search-input')!.addEventListener('input', () => filterAndRenderSecrets());
+
+// ── Categories ──────────────────────────────────────────
+async function loadCategoryBar(): Promise<void> {
+  const bar = document.getElementById('category-bar')!;
+  const result = await window.api.categories.list();
+  const cats = result.ok ? (result.categories || []) : [];
+  
+  bar.innerHTML = '<button class="btn btn-sm btn-outline-secondary category-btn' + (selectedCategory === 'all' ? ' active' : '') + '" data-category="all">All</button>' +
+    cats.map((c: CategoryView) =>
+      '<button class="btn btn-sm btn-outline-secondary category-btn' + (selectedCategory === c.id ? ' active' : '') + '" data-category="' + c.id + '">' + escHtml(c.name) + '</button>'
+    ).join('');
+  
+  bar.querySelectorAll('.category-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      selectedCategory = (btn as HTMLElement).dataset.category!;
+      bar.querySelectorAll('.category-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      filterAndRenderSecrets();
+    });
+  });
+}
+
+function filterAndRenderSecrets(): void {
+  const q = (document.getElementById('search-input') as HTMLInputElement).value.toLowerCase();
+  let filtered = allSecrets;
+  if (selectedCategory !== 'all') {
+    filtered = filtered.filter(s => s.categoryId === selectedCategory);
+  }
+  if (q) {
+    filtered = filtered.filter(s =>
+      s.title.toLowerCase().includes(q) || (s.username || '').toLowerCase().includes(q)
+    );
+  }
   renderSecrets(filtered);
+}
+
+// Add Category
+document.getElementById('btn-add-category')!.addEventListener('click', async () => {
+  const name = prompt('Category name:');
+  if (!name || !name.trim()) return;
+  const res = await window.api.categories.add(name.trim());
+  if (res.ok) {
+    toast('Category created');
+    await loadCategoryBar();
+  } else {
+    toast('Error: ' + res.error);
+  }
 });
 
 // ── Detail view ────────────────────────────────────────

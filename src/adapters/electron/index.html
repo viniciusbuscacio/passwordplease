@@ -30,7 +30,7 @@
     .pp-btn-label { font-size: 0.6rem; color: var(--bs-secondary-color); margin-top: 1px; user-select: none; position: absolute; left: 50%; transform: translateX(-50%); white-space: nowrap; }
     .pp-header .d-flex > .text-center { position: relative; }
     [title] { position: relative; }
-    [title]:hover::after { content: attr(title); position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); background: var(--bs-body-color); color: var(--bs-body-bg); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; white-space: nowrap; z-index: 999; pointer-events: none; margin-bottom: 4px; }
+    [title]:hover::after { content: attr(title); position: absolute; top: 100%; right: 0; background: var(--bs-body-color); color: var(--bs-body-bg); font-size: 0.7rem; padding: 2px 6px; border-radius: 4px; white-space: nowrap; z-index: 999; pointer-events: none; margin-top: 4px; }
     .icon-body { fill: #f0a830; }
     .icon-shackle { fill: #6b7f8a; }
     .icon-keyhole { fill: #4a5968; }
@@ -74,6 +74,10 @@
 
     /* Detail table: align action buttons with header buttons */
     #view-detail .table td:last-child { padding-right: 0; }
+
+    /* Category pills */
+    .category-btn { border-radius: 1rem; font-size: 0.8rem; padding: 0.2rem 0.75rem; transition: all 0.15s; }
+    .category-btn.active { background: var(--pp-accent) !important; border-color: var(--pp-accent) !important; color: #fff !important; }
 
     /* Scrollbar (webkit) */
     ::-webkit-scrollbar { width: 6px; }
@@ -167,8 +171,12 @@
   <div id="view-list" class="view container py-3">
     <div class="d-flex justify-content-between align-items-center mb-3">
       <h5 class="mb-0"><i class="bi bi-key me-2"></i>Secrets</h5>
-      <button id="btn-add-secret" class="btn btn-primary btn-sm" data-status="Open the form to create a new secret."><i class="bi bi-plus-lg me-1"></i>Add New</button>
+      <div class="d-flex gap-1">
+        <button id="btn-add-category" class="btn btn-primary btn-sm" data-status="Create a new category."><i class="bi bi-folder-plus me-1"></i>Add Category</button>
+        <button id="btn-add-secret" class="btn btn-primary btn-sm" data-status="Open the form to create a new secret."><i class="bi bi-plus-lg me-1"></i>Add Secret</button>
+      </div>
     </div>
+    <div id="category-bar" class="d-flex gap-2 mb-2 flex-wrap"><button class="btn btn-sm btn-outline-secondary category-btn active" data-category="all">All</button></div>
     <input type="text" id="search-input" class="form-control mb-3" placeholder="Search secrets..." data-status="Type to filter secrets by title or username.">
     <div id="secrets-container"></div>
     <p id="no-secrets" class="text-body-secondary text-center mt-4 d-none"><i class="bi bi-inbox me-2"></i>No secrets yet. Click "Add New" to get started.</p>
