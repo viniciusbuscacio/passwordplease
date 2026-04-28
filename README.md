@@ -1,6 +1,6 @@
 # 🔐 passwordPlease
 
-**A simple, offline password manager that keeps your secrets encrypted on your machine — not on someone else's cloud.**
+**A simple, offline password manager that keeps your secrets encrypted on your machine — not on someone else's cloud. Runs on Windows, macOS, and Linux.**
 
 ![License](https://img.shields.io/badge/license-CC0--1.0-blue)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-green)
