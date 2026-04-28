@@ -11,6 +11,6 @@
     "sourceMap": true,
     "types": []
   },
-  "include": ["renderer.ts"],
+  "include": ["renderer.ts", "renderer.d.ts"],
   "exclude": []
 }

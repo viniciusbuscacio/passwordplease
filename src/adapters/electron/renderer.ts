@@ -1,8 +1,5 @@
 'use strict';
 
-// Make this file a module so `declare global` works
-export {};
-
 // Type declarations for the API exposed by preload.ts via contextBridge
 interface VaultApi {
   create: (dbPath: string, masterPassword: string) => Promise<{ ok: boolean; error?: string }>;
@@ -74,11 +71,8 @@ interface AppConfigView {
   biometricEnabled?: boolean;
 }
 
-declare global {
-  interface Window {
-    api: WindowApi;
-  }
-  function togglePwVis(inputId: string, btn: HTMLElement): void;
+interface Window {
+  api: WindowApi;
 }
 
 // ── State ──────────────────────────────────────────────
