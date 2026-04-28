@@ -1,97 +1,88 @@
 # 🔐 passwordPlease
 
-> An open-source password manager with CLI + Desktop GUI, built with Clean Architecture.
+**A simple, offline password manager that keeps your secrets encrypted on your machine — not on someone else's cloud.**
 
 ![License](https://img.shields.io/badge/license-CC0--1.0-blue)
 ![Node](https://img.shields.io/badge/node-%3E%3D18-green)
-![Tests](https://img.shields.io/badge/tests-23%2F23-brightgreen)
+![Tests](https://img.shields.io/badge/tests-52%2F52-brightgreen)
+![Platforms](https://img.shields.io/badge/platforms-macOS%20%7C%20Windows%20%7C%20Linux-lightgrey)
 
-## ✨ What's New in v2.0
+---
 
-**Complete rewrite** with modern architecture and security:
+## Why passwordPlease?
 
-- 🏗️ **Clean Architecture** — Domain / Use Cases / Infrastructure / Adapters
-- 🔒 **Modern Crypto** — `node:crypto` native (AES-256-GCM + scrypt + bcrypt), replacing abandoned CryptoJS
-- ⌨️ **CLI-first** — Headless operation for automation and scripting
-- 🖥️ **Electron GUI** — Single-page app with Bootstrap 5.3
-- 🌙 **Dark Mode** — System preference detection + manual toggle
-- ✅ **23 Tests** — Unit + Integration, all passing
-- 🍎 **Cross-platform** — macOS, Windows, Linux
+- **100% offline** — Your vault is a local file. No accounts, no subscriptions, no servers.
+- **Strong encryption** — AES-256-GCM + scrypt. Your data is unreadable without the master password.
+- **GUI + CLI** — Desktop app for daily use, command-line for scripting and automation.
+- **Portable** — The vault is a single `.db` file you can copy, back up, or sync however you want.
+- **Open source** — Read every line. Zero telemetry, zero tracking, zero cloud dependencies.
 
-### Security Upgrades (v1 → v2)
+## Download
 
-| Aspect | v1 | v2 |
-|--------|----|----|n| Data cipher | AES-256-CBC | AES-256-**GCM** (authenticated) |
-| Mount key cipher | CryptoJS.AES (EvpKDF) | node:crypto AES-256-GCM |
-| KDF | EvpKDF (weak) | **scrypt** (GPU-resistant) |
-| Auth tag | None | ✅ Detects tampering |
-| Dependencies | crypto-js + cryptojs (abandoned) | node:crypto (built-in, OpenSSL) |
+Get the latest release for your platform:
 
-## 📦 Installation
+| Platform | Download | Size |
+|----------|----------|------|
+| 🍎 macOS (Apple Silicon) | [passwordPlease-2.0.0-arm64.dmg](https://github.com/viniciusbuscacio/passwordplease/releases/download/v2.0.0/passwordPlease-2.0.0-arm64.dmg) | 121 MB |
+| 🪟 Windows | [passwordPlease-Setup-2.0.0.exe](https://github.com/viniciusbuscacio/passwordplease/releases/tag/v2.0.0) | 135 MB |
+| 🐧 Linux | [passwordPlease-2.0.0.AppImage](https://github.com/viniciusbuscacio/passwordplease/releases/download/v2.0.0/passwordPlease-2.0.0.AppImage) | 129 MB |
 
-```bash
-git clone https://github.com/viniciusbuscacio/passwordplease.git
-cd passwordplease
-git checkout v2-clean-architecture
-npm install
-```
+> **Note:** The app is not code-signed. On macOS, right-click → Open on first launch. On Linux, `chmod +x` the AppImage.
 
-## 🚀 Usage
+## Desktop App
 
-### Desktop GUI (Electron)
-
-```bash
-npm start
-```
+The GUI lets you create vaults, store passwords, search entries, and copy credentials to clipboard — all with dark mode support.
 
 Features:
-- Create / Open / Lock vaults
-- Add, edit, delete secrets
+- Create and open encrypted vaults
+- Store passwords, API keys, tokens, notes
+- Search and filter entries
 - Copy username/password to clipboard
-- Password generator
-- Search secrets
-- Dark/Light mode toggle
-- Auto-lock timer
-- System tray support
+- Dark/Light mode (auto-detects system preference)
+- Touch ID unlock on macOS
 
-### CLI
+## Command-Line (CLI)
+
+Perfect for headless servers, automation, and scripting. No GUI required.
 
 ```bash
-# Create a new vault
-node src/adapters/cli/cli.js init /path/to/vault.db --master-password "your-password"
+# Clone and install
+git clone https://github.com/viniciusbuscacio/passwordplease.git
+cd passwordplease && npm install
 
-# Add a secret
-node src/adapters/cli/cli.js set "GitHub Token" \
-  --username "user" \
-  --password "ghp_xxx" \
-  --url "https://github.com" \
+# Create a vault
+node src/adapters/cli/cli.js init /path/to/vault.db
+
+# Store a secret
+node src/adapters/cli/cli.js set "AWS Token" \
+  --username "admin" \
+  --password "AKIA..." \
+  --url "https://aws.amazon.com" \
   --vault /path/to/vault.db \
-  --master-password "your-password"
+  --master-password "your-master-password"
 
-# List secrets
-node src/adapters/cli/cli.js list --vault /path/to/vault.db --master-password "your-password"
+# List all entries
+node src/adapters/cli/cli.js list --vault /path/to/vault.db --master-password "..."
 
-# Get a secret (JSON output)
-node src/adapters/cli/cli.js get "GitHub Token" --json --vault /path/to/vault.db --master-password "your-password"
+# Get a secret (plain text or JSON)
+node src/adapters/cli/cli.js get "AWS Token" --field password --vault /path/to/vault.db --master-password "..."
+node src/adapters/cli/cli.js get "AWS Token" --json --vault /path/to/vault.db --master-password "..."
 
-# Get a specific field
-node src/adapters/cli/cli.js get "GitHub Token" --field password --vault /path/to/vault.db --master-password "your-password"
-
-# Delete a secret
-node src/adapters/cli/cli.js delete "GitHub Token" --vault /path/to/vault.db --master-password "your-password"
+# Delete
+node src/adapters/cli/cli.js delete "AWS Token" --vault /path/to/vault.db --master-password "..."
 ```
 
 ### Environment Variables
 
-Instead of passing `--vault` and `--master-password` every time:
+Set these to skip `--vault` and `--master-password` on every command:
 
 ```bash
 export PP_VAULT="/path/to/vault.db"
-export PP_MASTER_PASSWORD="your-password"
+export PP_MASTER_PASSWORD="your-master-password"
 
 # Now just:
-node src/adapters/cli/cli.js list
-node src/adapters/cli/cli.js get "GitHub Token" --field password
+pp list
+pp get "AWS Token" --field password
 ```
 
 ### Programmatic API
@@ -101,84 +92,80 @@ const VaultController = require('./src/controller/VaultController');
 const NodeCryptoProvider = require('./src/infrastructure/NodeCryptoProvider');
 const SqliteStorageProvider = require('./src/infrastructure/SqliteStorageProvider');
 
-const controller = new VaultController(
-  new NodeCryptoProvider(),
-  new SqliteStorageProvider()
-);
-
-await controller.unlock('/path/to/vault.db', 'master-password');
-const secret = await controller.get('GitHub Token');
-console.log(secret.password);
-await controller.lock();
+const ctrl = new VaultController(new NodeCryptoProvider(), new SqliteStorageProvider());
+await ctrl.unlock('/path/to/vault.db', 'master-password');
+const secret = await ctrl.get('AWS Token');
+console.log(secret.password); // AKIA...
+await ctrl.lock();
 ```
 
-## 🏗️ Architecture
+## Security
+
+All secrets are encrypted at rest using industry-standard cryptography:
+
+| Layer | Algorithm |
+|-------|-----------|
+| Data encryption | AES-256-GCM (authenticated, with random IV per entry) |
+| Key derivation | scrypt (CPU + memory hard, GPU-resistant) |
+| Master password hash | bcrypt (salt factor 12) |
+| Storage | SQLite (single portable file) |
+
+The vault file is useless without the master password. There are no backdoors, no recovery keys, and no server-side copies.
+
+## Architecture
+
+Built with Clean Architecture — domain logic is decoupled from storage and UI:
 
 ```
-┌─────────────────────────────────────────────────────┐
-│  ADAPTERS (external interfaces)                     │
-│  ┌──────────┐  ┌───────────┐  ┌──────────────────┐ │
-│  │ CLI      │  │ Electron  │  │ API (programmatic)│ │
-│  └────┬─────┘  └─────┬─────┘  └────────┬─────────┘ │
-│       └───────────────┼────────────────┘            │
-│  ┌────────────────────▼───────────────────────┐ │
-│  │  VaultController — orchestrates use cases      │ │
-│  └────────────────────┬───────────────────────┘ │
-│  ┌────────────────────▼───────────────────────┐ │
-│  │  USE CASES: CreateVault, UnlockVault, Get/Set/ │ │
-│  │  List/Delete Secret                            │ │
-│  └────────────────────┬───────────────────────┘ │
-│  ┌────────────────────▼───────────────────────┐ │
-│  │  DOMAIN: Secret, Category, VaultMetadata       │ │
-│  │  ICryptoProvider, IStorageProvider              │ │
-│  └────────────────────────────────────────────┘ │
-│  ┌────────────────────────────────────────────┐ │
-│  │  INFRASTRUCTURE: NodeCryptoProvider (node:crypto│ │
-│  │  + bcrypt), SqliteStorageProvider (sqlite3)    │ │
-│  └────────────────────────────────────────────┘ │
-└─────────────────────────────────────────────────────┘
+Adapters (CLI, Electron, API)
+        ↓
+  VaultController
+        ↓
+  Use Cases (Create, Unlock, Get, Set, List, Delete)
+        ↓
+  Domain (Secret, Category, ICryptoProvider, IStorageProvider)
+        ↓
+  Infrastructure (node:crypto + bcrypt, SQLite)
 ```
 
-## 🧪 Tests
+## Development
 
 ```bash
-node --test tests/unit/crypto.test.js tests/integration/vault.test.js
+git clone https://github.com/viniciusbuscacio/passwordplease.git
+cd passwordplease
+npm install
+
+# Run the desktop app
+npm start
+
+# Run tests (52 tests: unit + integration + edge cases)
+node --test tests/**/*.test.js
+
+# Build for your platform
+npm run build:mac     # macOS DMG + ZIP (arm64)
+npm run build:win     # Windows NSIS installer
+npm run build:linux   # Linux AppImage (x64)
 ```
 
-- **14 unit tests** — Crypto round-trips, tampering detection, key derivation
-- **9 integration tests** — Full vault lifecycle (create → set → get → list → delete → lock → unlock)
-
-## 🛠️ Tech Stack
-
-| Component | Technology |
-|-----------|----------|
-| Crypto (data) | `node:crypto` AES-256-GCM + random IV |
-| KDF | `node:crypto` scryptSync |
-| Hash (master password) | bcrypt (salt 12) |
-| Database | sqlite3 |
-| IDs | uuid v4 |
-| Desktop GUI | Electron + Bootstrap 5.3 |
-| Tests | node:test (built-in) |
-
-## 📝 Roadmap
+## Roadmap
 
 - [x] Clean Architecture rewrite
 - [x] Modern crypto (AES-256-GCM + scrypt)
 - [x] CLI adapter
-- [x] Electron GUI v2 (dark mode + Bootstrap 5.3)
-- [x] Programmatic API
-- [ ] macOS .dmg build
-- [ ] Linux .AppImage build
-- [ ] v1 → v2 migration tool
-- [ ] npm publish
+- [x] Electron GUI (dark mode, Bootstrap 5.3)
+- [x] Touch ID (macOS)
+- [x] macOS DMG
+- [x] Windows installer (Inno Setup)
+- [x] Linux AppImage
 - [ ] Change master password (GUI)
-- [ ] Export vault (JSON)
-- [ ] PWA (mobile) — v3.0
+- [ ] Export/import vault (JSON)
+- [ ] npm publish (`npx pp`)
+- [ ] v1 → v2 migration tool
 
-## 📄 License
+## License
 
 [CC0 1.0 — Public Domain](LICENSE.md)
 
-## 👤 Author
+## Author
 
 **Vinicius Buscacio** — [@viniciusbuscacio](https://github.com/viniciusbuscacio)
