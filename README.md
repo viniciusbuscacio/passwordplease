@@ -1,5 +1,10 @@
 # 🔐 passwordPlease
 
+> [!IMPORTANT]
+> **This project has been succeeded by [go-passwords](https://github.com/viniciusbuscacio/go-passwords)** — a rewrite in
+> Go with a fully encrypted vault format (the whole file, not just the values), a single-binary CLI and an
+> upcoming desktop GUI + REST API for AI agents. passwordPlease keeps working, but new development happens there.
+
 **A simple, offline password manager that keeps your secrets encrypted on your machine — not on someone else's cloud. Runs on Windows, macOS, and Linux.**
 
 ![License](https://img.shields.io/badge/license-CC0--1.0-blue)
